@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+
+  db:
+      image: mysql:5.7
+      environment:
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
+        #MYSQL_USER: db_user
+        #MYSQL_PASSWORD: db_user_pass
+      ports:
+        - "6033:3306"
+      restart: on-failure
+      volumes:
+        - dbdata:/var/lib/mysql
+
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      links:
+        - db
+      environment:
+        PMA_HOST: db
+        PMA_PORT: 3306
+        PMA_ARBITRARY: 1
+      restart: on-failure
+      ports:
+        - 8081:80
+
+  bot:
+    build: .
+    command: sh -c "python bot.py"
+    depends_on:
+      - db
+      - phpmyadmin
+    env_file:
+      - ./.env
+
+volumes:
+  dbdata:
