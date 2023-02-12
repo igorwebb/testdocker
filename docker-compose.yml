@@ -7,8 +7,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-      #MYSQL_USER: db_user
-      #MYSQL_PASSWORD: db_user_pass
+      # MYSQL_USER: db_user
+      # MYSQL_PASSWORD: db_user_pass
     ports:
       - "6033:3306"
     restart: on-failure
