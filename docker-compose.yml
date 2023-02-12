@@ -27,6 +27,9 @@ services:
       ports:
         - 8081:80
 
+  ngrok:
+    image: wernight/ngrok:latest
+
   bot:
     build: .
     command: sh -c "python bot.py"
