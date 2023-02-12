@@ -28,7 +28,14 @@ services:
       - 8081:80
 
   ngrok:
-    image: wernight/ngrok:latest
+    image: shkoliar/ngrok:latest
+    ports:
+      - 4551:4551
+    links:
+      - web
+    environment:
+      - DOMAIN=web
+      - PORT=80
 
   bot:
     build: .
