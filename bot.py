@@ -1,21 +1,26 @@
 import os
-
-import logging
+from pyngrok import ngrok
 
 from aiogram import Bot, types
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 from aiogram.dispatcher import Dispatcher
 from aiogram.dispatcher.webhook import SendMessage
 from aiogram.utils.executor import start_webhook
+import logging
+
+# подключение к серверу NGROK
+ngrok.set_auth_token(os.getenv('NGROK_TOKEN'))
+http_tunnel = ngrok.connect(5000, bind_tls=True)
 
 # webhook settings
-WEBHOOK_HOST = 'https://79.143.29.17'
+
+WEBHOOK_HOST = http_tunnel.public_url
 WEBHOOK_PATH = ''
 WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
 
 # webserver settings
-WEBAPP_HOST = '79.143.29.17'  # or ip
-WEBAPP_PORT = 443
+WEBAPP_HOST = 'localhost' # or ip
+WEBAPP_PORT = 5000
 
 logging.basicConfig(level=logging.INFO)
 
@@ -33,11 +38,12 @@ async def echo(message: types.Message):
     return SendMessage(message.chat.id, message.text)
 
 
+### Запуск бота
 async def on_startup(dp):
     await bot.set_webhook(WEBHOOK_URL)
     # insert code here to run it after start
 
-
+### Остановка бота
 async def on_shutdown(dp):
     logging.warning('Shutting down..')
 
@@ -49,6 +55,8 @@ async def on_shutdown(dp):
     # Close DB connection (if used)
     await dp.storage.close()
     await dp.storage.wait_closed()
+
+    ngrok.disconnect(http_tunnel.public_url)
 
     logging.warning('Bye!')
 
